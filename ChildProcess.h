@@ -9,10 +9,11 @@
 #include <string>
 #include <err.h>     // error
 #include <unistd.h>  // chdir
+#define CWD_SIZE 512
 
 
-void exec() {
-    printf("Interactive Mode:\n");
+void exec(int argc, char **argv) {
+    printf("Entered Interactive Mode\n\n");
 
     char *line = NULL;
     size_t linesize = 0;
@@ -20,9 +21,8 @@ void exec() {
     char path_name[512];
 
     // Path
-    char *ptr = NULL; char delim[] = " ";
-    char *paths[5];
-    unsigned int ACCESS_OK = 0;
+    char *ptr = NULL;
+    char *argvv[2] = {"ls", NULL}; char *buf;
 
     while ((linelen = getline(&line, &linesize, stdin)) != -1)
     {
@@ -37,23 +37,36 @@ void exec() {
         }
         else if (strncmp("path", line, 4) == 0)
         {
-            ptr = std::strtok(line, delim);
+            printf("Current Working Directory: %s\n", getcwd(buf, CWD_SIZE));
+            ptr = std::strtok(line, " \n");
             while (ptr != NULL)
             {
-                ptr = std::strtok(NULL, delim); // update ptr to ignore "path" command
+                ptr = std::strtok(NULL, " \n"); // update ptr to ignore "path" command
 
                 // Search file directory
                 snprintf(path_name, 511, "%s/ls", ptr);
-                printf("Searching: %s\n", path_name);
+                printf("\nSearching: %s\n", path_name);
                 if ((access(ptr, X_OK)) == 0)
                 {
-                    printf("path exists!\n");
+                    printf("Path Exists\n");
+                    //execv("ls", argvv); // nothing will return unless it's an error
+                    //snprintf(path_name, 511, "%s/ls", ptr);
                 }
                 else
-                    printf("invalid path\n");
+                    printf("Invalid Path\n");
             }
         }
-        fwrite(line, linelen, 1, stdout);
+        // other commands
+        else
+        {
+            for(int i = 0; i < argc; i++)
+            {
+                printf(" %s", argv[i]);
+            }
+        }
+
+        //fwrite(line, linelen, 1, stdout);
+        printf("\nend of while loop\n\n");
     }
 
     free(line); // deallocate memory block in heap

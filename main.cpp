@@ -31,7 +31,7 @@ int main(int argc, char **argv)
     else if(pid == 0)
     {
         printf("child pid: %d\n", (int) getpid());
-        exec();
+        exec(argc, argv);
     }
     // Parent Process
     else
