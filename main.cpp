@@ -37,7 +37,6 @@ int main(int argc, char **argv)
     // Child Process
     else if(pid == 0)
     {
-<<<<<<< HEAD
         printf("Fork Successful | Child PID: %d\n\n", (int) getpid());
         char *line = nullptr;
         size_t linesize = 0;
@@ -151,11 +150,8 @@ int main(int argc, char **argv)
         free(line); // deallocate memory block in heap
         if (ferror(stdin))
             err(1, "getline");
-=======
-        printf("child pid: %d\n", (int) getpid());
-        exec(argc, argv);
->>>>>>> 13f60c5a4825123c518366814d9ea17bed61b08a
     }
+
     // Parent Process
     else
     {
