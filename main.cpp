@@ -3,9 +3,9 @@
 #include <string>
 #include <err.h>     // error
 #include <unistd.h>  // chdir
+#include <fcntl.h> // file
 #include "Functions.h"
 
-#define PATH_MAX 100
 #define CWD_SIZE 512
 
 /*
@@ -52,7 +52,9 @@ int main(int argc, char **argv)
         int execv_ret; // check execv return value (-1 is error)
 
         // Redirect Output
-        char const *redirect_arrow = ">";
+        char redirect_arrow[2];
+        strcpy(redirect_arrow, ">");
+
         char *output_filename = nullptr;// {nullptr};
         bool read_arrow = false;
 
@@ -66,7 +68,25 @@ int main(int argc, char **argv)
             }
             else if (strncmp("cd", line, 2) == 0)
             {
-                printf("entered cd\n");
+                // 1 Standard Error Message
+                char *cd_path = nullptr;
+
+                // Parse
+                int check = 0;
+                cd_path = std::strtok(line, " \n");
+                cd_path = std::strtok(line, " \n");
+//                cd_path = ptr;
+//
+//                while (ptr != nullptr && check <= 2)
+//                {
+//                    ptr = std::strtok(nullptr, " \n");
+//                    check++;
+//                }
+
+                if (chdir(cd_path) == 0)
+                    printf("Directory successfully changed to %s\n", cd_path);
+                else
+                    perror(cd_path);
             }
             else if (strncmp("path", line, 4) == 0)
             {
@@ -94,46 +114,55 @@ int main(int argc, char **argv)
                 char *user_cmd[20];
                 ptr = std::strtok(line, " \n");
                 user_cmd[i++] = ptr;
+
                 while (ptr != nullptr && i < 20)
                 {
                     ptr = std::strtok(nullptr, " \n"); // update ptr
-                    if (!strcmp(ptr, ">")) // if identical, it will return 0
+
+                    // Check for redirection
+                    if (*ptr == redirect_arrow[0])
                     {
                         ptr = std::strtok(nullptr, " \n");
                         output_filename = ptr;
-                        read_arrow = true;
+                        read_arrow = true; // open file
                         printf("Output redirected to %s\n", output_filename);
                         break;
                     }
                     user_cmd[i] = ptr;
-                    //printf("Stored instruction: %s\n", user_cmd[i++]);
+                    printf("Stored instruction: %s\n", user_cmd[i++]);
                 }
+
+//                for (int j = 0; j <= i; j++)
+//                {
+//                    printf(";Stored instruction: %s\n", user_cmd[j]);
+//                }
+
+
                 i = 0; // reset
 
                 // Concatenate Forward Slash
-                char * cat_forward_slash = (char *) malloc(1 + strlen(path_name[0]));
-                strcpy(cat_forward_slash, forward_slash); // "/"
-                strcat(cat_forward_slash, line);
+                char *cat_final = cat_forward_slash(line, path_name[0]);
 
                 // Execute & Test Paths
-                char * user_cat = (char *) malloc(1 + strlen(cat_forward_slash)+ strlen(path_name[0]));
+                char * user_cat = (char *) malloc(1 + strlen(cat_final)+ strlen(path_name[0]));
+
                 while(*path_name[i] != '\0')
                 {
                     // Concatenate path & UNIX instruction type
                     strcpy(user_cat, path_name[i]); // "/bin"
-                    strcat(user_cat, cat_forward_slash); // "/bin/ls"
-                    printf("\nFinal Path: %s\n", user_cat);
+                    strcat(user_cat, cat_final); // "/bin/ls"
+                    printf("Final Path: %s\n", user_cat);
 
                     // Check validity of path
                     if ((access(user_cat, X_OK)) == 0)
                     {
-                        close(STDOUT_FILENO);
-                        open(output_filename, O_CREAT|O_WRONLY|O_TRUNC, S_IRWXU);
-                        printf("Path Exists | Child PID#2: %i | EXECV_RET: %i\n", getpid(), execv_ret);
+                        //open_output_file(read_arrow, output_filename);
                         if (read_arrow)
                         {
-                            
+                            close(STDOUT_FILENO);
+                            open(output_filename, O_CREAT | O_WRONLY| O_TRUNC, S_IRWXU);
                         }
+                        printf("((Path Exists | Child PID#2: %i | EXECV_RET: %i\n", getpid(), execv_ret);
                         execv_ret = execv(user_cat, user_cmd);
                         /* nothing will return unless it's an error (-1)
                          * once execution completes, program ends
@@ -155,7 +184,7 @@ int main(int argc, char **argv)
     // Parent Process
     else
     {
-        int wait_child = wait(nullptr); // wait for child to finish execution
+        wait(nullptr); // wait for child to finish execution
         printf("\n~Reached Parent Process~\n");
     }
 }
