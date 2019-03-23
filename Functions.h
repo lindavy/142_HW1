@@ -63,7 +63,44 @@ char *cat_forward_slash(char *line, char *path_name)
     return cat_forward_slash;
 }
 
-
+//void execute_instruction(char *line, char *path_name[], char *user_cmd[], bool read_arrow, char *output_filename)
+//{
+//    int execv_ret = 0;
+//    int i = 0;
+//
+//    // Concatenate Forward Slash
+//    char *cat_final = cat_forward_slash(line, path_name[0]);
+//
+//    // Execute & Test Paths
+//    char * user_cat = (char *) malloc(1 + strlen(cat_final)+ strlen(path_name[0]));
+//
+//    while(*path_name[i] != '\0')
+//    {
+//        // Concatenate path & UNIX instruction type
+//        strcpy(user_cat, path_name[i]); // "/bin"
+//        strcat(user_cat, cat_final); // "/bin/ls"
+//        printf("Final Path: %s\n", user_cat);
+//
+//        // Check validity of path
+//        if ((access(user_cat, X_OK)) == 0)
+//        {
+//            //open_output_file(read_arrow, output_filename);
+//            if (read_arrow)
+//            {
+//                close(STDOUT_FILENO);
+//                open(output_filename, O_CREAT | O_WRONLY| O_TRUNC, S_IRWXU);
+//            }
+//            printf("((Path Exists | Child PID#2: %i | EXECV_RET: %i\n", getpid(), execv_ret);
+//            execv_ret = execv(user_cat, user_cmd);
+//            /* nothing will return unless it's an error (-1)
+//             * once execution completes, program ends
+//             * */
+//        }
+//        else
+//            printf("Invalid Path\n");
+//        i++;
+//    }
+//}
 
 
 #endif //INC_142_HW1_FUNCTIONS_H

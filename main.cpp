@@ -34,7 +34,7 @@ int main(int argc, char **argv)
         fprintf(stderr, "Forked Failed!\n");
         exit(-1);
     }
-    // Child Process
+        // Child Process
     else if(pid == 0)
     {
         printf("Fork Successful | Child PID: %d\n\n", (int) getpid());
@@ -114,22 +114,27 @@ int main(int argc, char **argv)
                 char *user_cmd[20];
                 ptr = std::strtok(line, " \n");
                 user_cmd[i++] = ptr;
+                //printf("ptr: %s\n", ptr);
+
+                //printf("laf: %c\n", redirect_arrow[0]);
 
                 while (ptr != nullptr && i < 20)
                 {
                     ptr = std::strtok(nullptr, " \n"); // update ptr
 
                     // Check for redirection
-                    if (*ptr == redirect_arrow[0])
-                    {
-                        ptr = std::strtok(nullptr, " \n");
-                        output_filename = ptr;
-                        read_arrow = true; // open file
-                        printf("Output redirected to %s\n", output_filename);
-                        break;
-                    }
+                    // if (*ptr == redirect_arrow[0])
+                    // {
+                    //     ptr = std::strtok(nullptr, " \n");
+                    //     output_filename = ptr;
+                    //     read_arrow = true; // open file
+                    //     printf("Output redirected to %s\n", output_filename);
+                    //     break;
+                    // }
+
                     user_cmd[i] = ptr;
                     printf("Stored instruction: %s\n", user_cmd[i++]);
+                    //ptr = std::strtok(nullptr, " \n"); // update ptr
                 }
 
 //                for (int j = 0; j <= i; j++)
@@ -181,7 +186,7 @@ int main(int argc, char **argv)
             err(1, "getline");
     }
 
-    // Parent Process
+        // Parent Process
     else
     {
         wait(nullptr); // wait for child to finish execution
